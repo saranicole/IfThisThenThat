@@ -1,12 +1,17 @@
-local IFTTT = IfThisThenThat
+local IFTTT = IFTTT
 
 local Outcomes = IFTTT.Outcomes or ZO_DeferredInitializingObject:Subclass()
+Outcomes.items = {
+  Collectible = {},
+}
 
-function IFTTT.Outcomes:Initialize(parent)
-  self.items = {}
+function Outcomes:Initialize(parent)
   self.parent = parent
+  self.savedVars = parent.CV
 end
 
-function Outcomes.Initialize( ... )
-	IFTTT.CV.Outcomes = Outcomes:New( ... )
+function Outcomes.Init( ... )
+	Outcomes = Outcomes:New( ... )
 end
+
+IFTTT.Outcomes = Outcomes

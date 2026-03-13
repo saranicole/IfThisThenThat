@@ -1,12 +1,18 @@
-local IFTTT = IfThisThenThat
+local IFTTT = IFTTT
 
 local Triggers = IFTTT.Triggers or ZO_DeferredInitializingObject:Subclass()
+Triggers.items = {
+  Skills = {},
+}
 
-function IFTTT.Triggers:Initialize(parent)
-  self.items = {}
+function Triggers:Initialize(parent)
   self.parent = parent
+  self.savedVars = parent.CV
+  
 end
 
-function Triggers.Initialize( ... )
-	IFTTT.CV.Triggers = Triggers:New( ... )
+function Triggers.Init( ... )
+	Triggers = Triggers:New( ... )
 end
+
+IFTTT.Triggers = Triggers

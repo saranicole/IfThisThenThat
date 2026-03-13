@@ -1,4 +1,4 @@
-local IFTTT = IfThisThenThat
+local IFTTT = IFTTT
 
 IFTTT.Lang = {
   TRIGGER_HEADING = "Triggers",

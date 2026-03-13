@@ -1,5 +1,7 @@
 --Name Space
-IfThisThenThat = {}
+local IfThisThenThat = {}
+
+IFTTT = IfThisThenThat
 
 --Basic Info
 IFTTT.Name = "IfThisThenThat"
@@ -7,6 +9,8 @@ IFTTT.Name = "IfThisThenThat"
 local EM = EVENT_MANAGER
 
 function IFTTT.DiffTables(old, new, path)
+    if not old then return end
+    if not new then return end
     path = path or ""
     local changes = {}
 
