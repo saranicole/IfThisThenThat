@@ -8,6 +8,60 @@ end
 
 IFTTT.categorySelectStage = ""
 
+function IFTTT:UpdateLinkSettings()
+  self.panel:AddSetting {
+    type = LAM.ST_SECTION,
+    label = IFTTT.Lang.EXISTING_LINKS
+  }
+  for key, linkItem in pairs(IFTTT.Links.savedVarsAcc.links) do
+    self.panel:AddSetting {
+      type = LAM.ST_LABEL,
+      label = function()
+        return IFTTT.Lang.ACCOUNT.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
+      end
+    }
+    self.panel:AddSetting({
+      type = LAM.ST_BUTTON,
+      label = IFTTT.Lang.REMOVE_LINK,
+      buttonText = IFTTT.Lang.REMOVE,
+      tooltip = IFTTT.Lang.REMOVE_LINK,
+      clickHandler = function()
+        self.Links.savedVarsAcc.links[key] = nil
+        self.panel:UpdateControls()
+      end
+    })
+  end
+  for key, linkItem in pairs(self.Links.savedVarsChar.links) do
+    self.panel:AddSetting {
+      type = LAM.ST_LABEL,
+      label = function()
+        return IFTTT.Lang.CHARACTER.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
+      end
+    }
+    self.panel:AddSetting({
+      type = LAM.ST_BUTTON,
+      label = IFTTT.Lang.REMOVE_LINK,
+      buttonText = IFTTT.Lang.REMOVE,
+      tooltip = IFTTT.Lang.REMOVE_LINK,
+      clickHandler = function()
+        self.Links.savedVarsChar.links[key] = nil
+        self.panel:UpdateControls()
+      end
+    })
+  end
+  self.panel:AddSetting({
+    type = LAM.ST_BUTTON,
+    label = IFTTT.Lang.CLEAR_ALL,
+    buttonText = IFTTT.Lang.CLEAR,
+    tooltip = IFTTT.Lang.CLEAR_ALL,
+    clickHandler = function()
+      self.Links.savedVarsChar.links = {}
+      self.Links.savedVarsAcc.links = {}
+      self.panel:UpdateControls()
+    end
+  })
+end
+
 function IFTTT:BuildMenu()
 
   self.panel = LAM:AddAddon(self.Name, {
@@ -107,6 +161,7 @@ function IFTTT:BuildMenu()
       clickHandler = function()
         local linkTrigger = { trigger = triggerItem.selected, outcome = collectibleItem.selected }
         table.insert(self.Links.savedVarsChar.links, linkTrigger)
+        self:UpdateLinkSettings()
         self.panel:UpdateControls()
       end
     })
@@ -118,59 +173,10 @@ function IFTTT:BuildMenu()
       clickHandler = function()
         local linkTrigger = { trigger = triggerItem.selected, outcome = collectibleItem.selected }
         table.insert(self.Links.savedVarsAcc.links, linkTrigger)
+        self:UpdateLinkSettings()
         self.panel:UpdateControls()
       end
     })
   end
-  self.panel:AddSetting {
-    type = LAM.ST_SECTION,
-    label = IFTTT.Lang.EXISTING_LINKS
-  }
-  for key, linkItem in pairs(IFTTT.Links.savedVarsAcc.links) do
-    self.panel:AddSetting {
-      type = LAM.ST_LABEL,
-      label = function()
-        return IFTTT.Lang.ACCOUNT.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
-      end
-    }
-    self.panel:AddSetting({
-      type = LAM.ST_BUTTON,
-      label = IFTTT.Lang.REMOVE_LINK,
-      buttonText = IFTTT.Lang.REMOVE,
-      tooltip = IFTTT.Lang.REMOVE_LINK,
-      clickHandler = function()
-        self.Links.savedVarsAcc.links[key] = nil
-        self.panel:UpdateControls()
-      end
-    })
-  end
-  for key, linkItem in pairs(IFTTT.Links.savedVarsChar.links) do
-    self.panel:AddSetting {
-      type = LAM.ST_LABEL,
-      label = function()
-        return IFTTT.Lang.CHARACTER.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
-      end
-    }
-    self.panel:AddSetting({
-      type = LAM.ST_BUTTON,
-      label = IFTTT.Lang.REMOVE_LINK,
-      buttonText = IFTTT.Lang.REMOVE,
-      tooltip = IFTTT.Lang.REMOVE_LINK,
-      clickHandler = function()
-        self.Links.savedVarsChar.links[key] = nil
-        self.panel:UpdateControls()
-      end
-    })
-  end
-  self.panel:AddSetting({
-    type = LAM.ST_BUTTON,
-    label = IFTTT.Lang.CLEAR_ALL,
-    buttonText = IFTTT.Lang.CLEAR,
-    tooltip = IFTTT.Lang.CLEAR_ALL,
-    clickHandler = function()
-      self.Links.savedVarsChar.links = {}
-      self.Links.savedVarsAcc.links = {}
-      self.panel:UpdateControls()
-    end
-  })
+  self:UpdateLinkSettings()
 end

@@ -9,17 +9,19 @@ Skills.selections = {}
 Skills.selected = {}
 local EM = EVENT_MANAGER
 
+
+
 function Skills:Refresh()
   ZO_DeepTableCopy(Skills.available, Skills.previous)
   Skills.available = {}
-  for slot = 1, 8 do
+  for slot = 3, 8 do
       local abilityId = GetSlotBoundId(slot, HOTBAR_CATEGORY_PRIMARY)
       if abilityId and abilityId ~= 0 then
           local name = GetAbilityName(abilityId)
           table.insert(Skills.available, { name=name, bar=HOTBAR_CATEGORY_PRIMARY, slotId=slot, data=HOTBAR_CATEGORY_PRIMARY.."-"..tostring(slot).."-skills" })
       end
   end
-  for slot = 1, 8 do
+  for slot = 3, 8 do
       local abilityId = GetSlotBoundId(slot, HOTBAR_CATEGORY_BACKUP)
       if abilityId and abilityId ~= 0 then
           local name = GetAbilityName(abilityId)
@@ -30,19 +32,24 @@ function Skills:Refresh()
 end
 
 function Skills:callbacks(links)
-  EM:UnregisterForEvent(IFTTT.Name, EVENT_ACTION_SLOT_ABILITY_USED)
-  EM:RegisterForEvent(IFTTT.Name, EVENT_ACTION_SLOT_ABILITY_USED, function(_, actionSlotIndex) 
+  EM:UnregisterForEvent(IFTTT.Name.."SkillCallback", EVENT_ACTION_SLOT_ABILITY_USED)
+  EM:RegisterForEvent(IFTTT.Name.."SkillCallback", EVENT_ACTION_SLOT_ABILITY_USED, function(_, actionSlotIndex) 
     local callbackTable = {}
     for key, link in pairs(links) do
       callbackTable = {}
       local triggerparts = IFTTT.Split(link.trigger.data)
       local outcomeparts = IFTTT.Split(link.outcome.data)
       local type = IFTTT.toCapitalized(outcomeparts[3])
+      link.trigger.active = link.trigger.active or {}
       if tostring(actionSlotIndex) == triggerparts[2] then
         callbackTable[type] = callbackTable[type] or {}
         table.insert(callbackTable[type], link.outcome)
         for k, obj in pairs(callbackTable) do
-          IFTTT.Outcomes.items[k]:DoOutcome(obj)
+          IFTTT.Outcomes.items[k]:DoOutcome(obj, true)
+            local cooldown = GetActionSlotEffectDuration(tonumber(triggerparts[2]), tonumber(triggerparts[1]))
+            zo_callLater(function()
+              IFTTT.Outcomes.items[k]:DoOutcome(obj, false)
+            end, cooldown)
         end
       end
     end

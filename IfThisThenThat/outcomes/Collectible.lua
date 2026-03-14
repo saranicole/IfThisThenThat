@@ -68,11 +68,14 @@ function Collectible:RefreshCategories()
   end
 end
 
-function Collectible:DoOutcome(outcome)
+function Collectible:DoOutcome(outcome, toggleOn)
   for i = 1, #outcome do
     local outcomeparts = IFTTT.Split(outcome[i].data)
-    if IsCollectibleUsable(outcomeparts[1]) then
-      UseCollectible(outcomeparts[1])
+    if toggleOn and not IsCollectibleActive(tonumber(outcomeparts[1]), GAMEPLAY_ACTOR_CATEGORY_PLAYER) and IsCollectibleUsable(outcomeparts[1]) then
+      UseCollectible(tonumber(outcomeparts[1]))
+    end
+    if not toggleOn and IsCollectibleActive(tonumber(outcomeparts[1]), GAMEPLAY_ACTOR_CATEGORY_PLAYER) and IsCollectibleUsable(outcomeparts[1]) then
+      UseCollectible(tonumber(outcomeparts[1]))
     end
   end
 end
