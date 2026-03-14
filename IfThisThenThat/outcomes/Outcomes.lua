@@ -7,7 +7,6 @@ Outcomes.items = {
 
 function Outcomes:Initialize(parent)
   self.parent = parent
-  self.savedVars = parent.CV
 end
 
 function Outcomes.Init( ... )

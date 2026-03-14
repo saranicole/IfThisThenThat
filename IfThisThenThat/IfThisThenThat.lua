@@ -2,28 +2,39 @@ local IFTTT = IFTTT
 local EM = EVENT_MANAGER
 
 
-local function RefreshTriggers()
-  for key, obj in pairs(IFTTT.Triggers.items) do
+function IFTTT:RefreshTriggers()
+  for key, obj in pairs(self.Triggers.items) do
     obj:Refresh()
   end
-  for key, obj in pairs(IFTTT.Outcomes.items) do
+  for key, obj in pairs(self.Outcomes.items) do
     obj:RefreshCategories()
   end
-  IFTTT:BuildMenu()
+  self:BuildMenu()
+  self:AddCallbacks()
 end
 
-local function AddCallbacks()
-  for key, item in pairs(IFTTT.Triggers.items) do
-    item:callbacks()
+function IFTTT:AddCallbacks()
+  local callbackTable = {}
+  for key, item in pairs(self.Links.savedVarsChar.links) do
+    local trigger = item.trigger
+    local partsObj = self.Split(trigger.data)
+    local type = self.toCapitalized(partsObj[3])
+    callbackTable[type] = callbackTable[type] or {}
+    table.insert(callbackTable[type], item)
   end
+  for k, obj in pairs(callbackTable) do
+    self.Triggers.items[k]:callbacks(obj)
+  end
+  
 end
 
 
 local function onPlayerActivated()
   EM:UnregisterForEvent(IFTTT.Name, EVENT_PLAYER_ACTIVATED)
-  IFTTT.Triggers:Init(IFTTT)
-  IFTTT.Outcomes:Init(IFTTT)
-  RefreshTriggers()
+  IFTTT.Triggers:Initialize(IFTTT)
+  IFTTT.Outcomes:Initialize(IFTTT)
+  IFTTT.Links:Initialize(IFTTT)
+  IFTTT:RefreshTriggers()
 end
 
 EM:RegisterForEvent(IFTTT.Name, EVENT_PLAYER_ACTIVATED, onPlayerActivated)

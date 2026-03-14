@@ -7,8 +7,6 @@ Triggers.items = {
 
 function Triggers:Initialize(parent)
   self.parent = parent
-  self.savedVars = parent.CV
-  
 end
 
 function Triggers.Init( ... )

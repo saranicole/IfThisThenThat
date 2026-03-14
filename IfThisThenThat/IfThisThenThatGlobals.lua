@@ -8,6 +8,11 @@ IFTTT.Name = "IfThisThenThat"
 
 local EM = EVENT_MANAGER
 
+IFTTT.Default = {
+  links = {}
+
+}
+
 function IFTTT.DiffTables(old, new, path)
     if not old then return end
     if not new then return end
@@ -40,6 +45,29 @@ function IFTTT.DiffTables(old, new, path)
     end
 
     return changes
+end
+
+function IFTTT.Split(search, delim)
+  local parts = {}
+  local start = 1
+  delim = delim or "-"
+
+  while true do
+      local i, j = search:find(delim, start, true) -- true = plain match
+      if not i then
+          table.insert(parts, search:sub(start))
+          break
+      end
+
+      table.insert(parts, search:sub(start, i - 1))
+      start = j + 1
+  end
+  return parts
+end
+
+function IFTTT.toCapitalized(s)
+  s = s:lower()
+  return s:sub(1,1):upper() .. s:sub(2)
 end
 
 local function OnAddOnLoaded(eventCode, addonName)
