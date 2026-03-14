@@ -7,66 +7,13 @@ if not LibHarvensAddonSettings then
 end
 
 IFTTT.categorySelectStage = ""
-
-function IFTTT:UpdateLinkSettings()
-  self.panel:AddSetting {
-    type = LAM.ST_SECTION,
-    label = IFTTT.Lang.EXISTING_LINKS
-  }
-  for key, linkItem in pairs(IFTTT.Links.savedVarsAcc.links) do
-    self.panel:AddSetting {
-      type = LAM.ST_LABEL,
-      label = function()
-        return IFTTT.Lang.ACCOUNT.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
-      end
-    }
-    self.panel:AddSetting({
-      type = LAM.ST_BUTTON,
-      label = IFTTT.Lang.REMOVE_LINK,
-      buttonText = IFTTT.Lang.REMOVE,
-      tooltip = IFTTT.Lang.REMOVE_LINK,
-      clickHandler = function()
-        self.Links.savedVarsAcc.links[key] = nil
-        self.panel:UpdateControls()
-      end
-    })
-  end
-  for key, linkItem in pairs(self.Links.savedVarsChar.links) do
-    self.panel:AddSetting {
-      type = LAM.ST_LABEL,
-      label = function()
-        return IFTTT.Lang.CHARACTER.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
-      end
-    }
-    self.panel:AddSetting({
-      type = LAM.ST_BUTTON,
-      label = IFTTT.Lang.REMOVE_LINK,
-      buttonText = IFTTT.Lang.REMOVE,
-      tooltip = IFTTT.Lang.REMOVE_LINK,
-      clickHandler = function()
-        self.Links.savedVarsChar.links[key] = nil
-        self.panel:UpdateControls()
-      end
-    })
-  end
-  self.panel:AddSetting({
-    type = LAM.ST_BUTTON,
-    label = IFTTT.Lang.CLEAR_ALL,
-    buttonText = IFTTT.Lang.CLEAR,
-    tooltip = IFTTT.Lang.CLEAR_ALL,
-    clickHandler = function()
-      self.Links.savedVarsChar.links = {}
-      self.Links.savedVarsAcc.links = {}
-      self.panel:UpdateControls()
-    end
-  })
-end
+IFTTT.deleteSelected = {}
 
 function IFTTT:BuildMenu()
 
   self.panel = LAM:AddAddon(self.Name, {
     allowDefaults = false,  -- Show "Reset to Defaults" button
-    allowRefresh = true    -- Enable automatic control updates
+    allowRefresh = false    -- Enable automatic control updates
   })
 
   self.panel:AddSetting {
@@ -86,6 +33,8 @@ function IFTTT:BuildMenu()
       end,
       setFunction = function(var, itemName, itemData)
         triggerItem.selected = {name=itemName, data=itemData.data}
+        d("triggerItem.selected")
+        d(triggerItem.selected)
       end,
       default = "",
     }
@@ -123,6 +72,7 @@ function IFTTT:BuildMenu()
         if type[3] == "category" then
           collectibleItem.selectedCategory.name = itemName
           collectibleItem.selectedCategory.data = itemData.data
+          d(collectibleItem.selectedCategory)
           IFTTT.Outcomes.items.Collectible:GetSubcategoryNames()
         elseif type[3] == "subcategory" then
           collectibleItem.selectedSubcategory.name = itemName
@@ -161,7 +111,7 @@ function IFTTT:BuildMenu()
       clickHandler = function()
         local linkTrigger = { trigger = triggerItem.selected, outcome = collectibleItem.selected }
         table.insert(self.Links.savedVarsChar.links, linkTrigger)
-        self:UpdateLinkSettings()
+        self:AddCallbacks()
         self.panel:UpdateControls()
       end
     })
@@ -173,10 +123,82 @@ function IFTTT:BuildMenu()
       clickHandler = function()
         local linkTrigger = { trigger = triggerItem.selected, outcome = collectibleItem.selected }
         table.insert(self.Links.savedVarsAcc.links, linkTrigger)
-        self:UpdateLinkSettings()
+        self:AddCallbacks()
         self.panel:UpdateControls()
       end
     })
   end
-  self:UpdateLinkSettings()
+  self.panel:AddSetting {
+    type = LAM.ST_SECTION,
+    label = IFTTT.Lang.EXISTING_LINKS
+  }
+  self.panel:AddSetting {
+    type = LAM.ST_LABEL,
+    label = function()
+      local linkText = ""
+      for key, linkItem in pairs(self.Links.savedVarsChar.links) do
+        linkText = linkText.."\n"..IFTTT.Lang.CHARACTER.."   "..key.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
+      end
+      return linkText
+    end
+  }
+  self.panel:AddSetting {
+    type = LAM.ST_LABEL,
+    label = function()
+      local linkText = ""
+      for key, linkItem in pairs(self.Links.savedVarsAcc.links) do
+        linkText = linkText.."\n"..IFTTT.Lang.ACCOUNT.."   "..key.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name
+      end
+      return linkText
+    end
+  }
+  self.panel:AddSetting {
+      type = LAM.ST_DROPDOWN,
+      label = IFTTT.Lang.COLLECTIBLE_HEADING,
+      items = function() 
+        local deleteItems = {}
+        for key, linkItem in pairs(self.Links.savedVarsAcc.links) do
+          table.insert(deleteItems, { name = IFTTT.Lang.ACCOUNT.."   "..key.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name, data = IFTTT.Lang.ACCOUNT.."-"..key })
+        end
+        for key, linkItem in pairs(self.Links.savedVarsChar.links) do
+          table.insert(deleteItems, { name = IFTTT.Lang.CHARACTER.."   "..key.."   "..linkItem.trigger.name.." -> "..linkItem.outcome.name, data = IFTTT.Lang.CHARACTER.."-"..key })
+        end
+        return deleteItems
+      end,
+      getFunction = function() 
+        return self.deleteSelected.name or ""
+      end,
+      setFunction = function(var, itemName, itemData)
+        self.deleteSelected.name = itemName
+        self.deleteSelected.data = itemData.data
+      end
+  }
+  self.panel:AddSetting({
+    type = LAM.ST_BUTTON,
+    label = IFTTT.Lang.REMOVE_LINK,
+    buttonText = IFTTT.Lang.REMOVE,
+    tooltip = IFTTT.Lang.REMOVE_LINK,
+    clickHandler = function()
+      local deleteParts = self.Split(self.deleteSelected.data)
+      if deleteParts[1] == IFTTT.Lang.ACCOUNT then
+        self.Links.savedVarsAcc.links[deleteParts[2]] = nil
+      end
+      if deleteParts[1] == IFTTT.Lang.CHARACTER then
+        self.Links.savedVarsChar.links[deleteParts[2]] = nil
+      end
+      self.panel:UpdateControls()
+    end
+  })
+  self.panel:AddSetting({
+    type = LAM.ST_BUTTON,
+    label = IFTTT.Lang.CLEAR_ALL,
+    buttonText = IFTTT.Lang.CLEAR,
+    tooltip = IFTTT.Lang.CLEAR_ALL,
+    clickHandler = function()
+      self.Links.savedVarsChar.links = {}
+      self.Links.savedVarsAcc.links = {}
+      self:RemoveCallbacks()
+      self.panel:UpdateControls()
+    end
+  })
 end

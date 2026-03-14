@@ -12,14 +12,34 @@ Collectible.selectedCategory = {}
 Collectible.selectedSubcategory = {}
 Collectible.selected = {}
 Collectible.selections = {}
+Collectible.snapshot = {}
 DM = ZO_COLLECTIBLE_DATA_MANAGER
 
--- COLLECTIBLE_CATEGORY_TYPE_VANITY_PET
+local nonUsableCategories = {
+  [1] = true, -- Stories
+  [2] = true, -- Patrons
+  [3] = true, -- Upgrade
+  [5] = true, -- Housing
+  [6] = true, -- Furnishings
+  [7] = true, -- Fragments
+  [10] = true, -- Tools
+  [11] = true, -- Mounts
+  [13] = true, -- Customized Actions
+  [15] = true, -- Armor Styles
+  [16] = true, -- Weapon Styles
+  [19] = true, -- Houses
+  [22] = true, -- Chapters
+  [25] = true, -- House Banks
+  [26] = true, -- Fragments
+}
+
 
 function Collectible:GetCategoryNames()
     for categoryIndex = 1, GetNumCollectibleCategories() do
         local categoryName, numSubcategories = GetCollectibleCategoryInfo(categoryIndex)
-        table.insert(self.categories, {name=categoryName, data=tostring(categoryIndex).."-"..tostring(numSubcategories).."-category"} )
+        if not nonUsableCategories[categoryIndex] then
+          table.insert(self.categories, {name=categoryName, data=tostring(categoryIndex).."-"..tostring(numSubcategories).."-category"} )
+        end
     end
     table.sort(self.categories, function(a, b)
         return a.name:lower() < b.name:lower()
@@ -29,6 +49,7 @@ end
 
 function Collectible:GetSubcategoryNames()
     if not self.selectedCategory.data then return end
+    self.subcategories = {}
     local parts = IFTTT.Split(self.selectedCategory.data, "-")
     for subcategoryIndex = 1, parts[2] do
         local subcategoryName, numCollectibles = GetCollectibleSubCategoryInfo(parts[1], subcategoryIndex)
@@ -45,12 +66,12 @@ function Collectible:GetCollectibles()
   self.collectibles = {}
   local parts = IFTTT.Split(self.selectedCategory.data, "-")
   local subparts = IFTTT.Split(self.selectedSubcategory.data, "-")
-  for collectibleIndex = 1, (subparts[2]) do
+  for collectibleIndex = 1, tonumber(subparts[2]) do
     local id = GetCollectibleId(parts[1], subparts[1], collectibleIndex)
     local name, description, iconFile, _, unlocked, _, purchasable, active = GetCollectibleInfo(id)
     if unlocked then
         table.insert(self.collectibles, {
-            data          = id.."-place-collectible",
+            data          = id.."-"..parts[1].."_"..subparts[1].."-collectible",
             name        = name
         })
     end
@@ -71,11 +92,15 @@ end
 function Collectible:DoOutcome(outcome, toggleOn)
   for i = 1, #outcome do
     local outcomeparts = IFTTT.Split(outcome[i].data)
+    local categoryparts = IFTTT.Split(outcomeparts[2], "_")
     if toggleOn and not IsCollectibleActive(tonumber(outcomeparts[1]), GAMEPLAY_ACTOR_CATEGORY_PLAYER) and IsCollectibleUsable(outcomeparts[1]) then
+      self.snapshot[categoryparts[1]] = self.snapshot[categoryparts[1]] or {}
+      self.snapshot[categoryparts[1]] = GetActiveCollectibleByType(tonumber(categoryparts[1]), GAMEPLAY_ACTOR_CATEGORY_PLAYER)
       UseCollectible(tonumber(outcomeparts[1]))
     end
     if not toggleOn and IsCollectibleActive(tonumber(outcomeparts[1]), GAMEPLAY_ACTOR_CATEGORY_PLAYER) and IsCollectibleUsable(outcomeparts[1]) then
-      UseCollectible(tonumber(outcomeparts[1]))
+      local collectibleId = self.snapshot[categoryparts[1]] or outcomeparts[1]
+      UseCollectible(tonumber(collectibleId))
     end
   end
 end

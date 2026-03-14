@@ -31,6 +31,10 @@ function Skills:Refresh()
   Skills.changes = IFTTT.DiffTables(Skills.previous, Skills.hotbar)
 end
 
+function Skills:removeCallbacks(links)
+  EM:UnregisterForEvent(IFTTT.Name.."SkillCallback", EVENT_ACTION_SLOT_ABILITY_USED)
+end
+
 function Skills:callbacks(links)
   EM:UnregisterForEvent(IFTTT.Name.."SkillCallback", EVENT_ACTION_SLOT_ABILITY_USED)
   EM:RegisterForEvent(IFTTT.Name.."SkillCallback", EVENT_ACTION_SLOT_ABILITY_USED, function(_, actionSlotIndex) 

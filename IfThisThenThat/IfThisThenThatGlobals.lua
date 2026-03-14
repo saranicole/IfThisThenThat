@@ -70,6 +70,15 @@ function IFTTT.toCapitalized(s)
   return s:sub(1,1):upper() .. s:sub(2)
 end
 
+function IFTTT.isValueInTable(table, element)
+  for _, v in ipairs(table) do
+    if element == v then
+      return true
+    end
+  end
+  return false
+end
+
 local function OnAddOnLoaded(eventCode, addonName)
   if addonName ~= IFTTT.Name then return end
 	EVENT_MANAGER:UnregisterForEvent(IFTTT.Name, EVENT_ADD_ON_LOADED)
@@ -78,6 +87,8 @@ local function OnAddOnLoaded(eventCode, addonName)
 	IFTTT.AV = ZO_SavedVars:NewAccountWide("IfThisThenThat_Vars", 1, ns, IFTTT.Default)
   IFTTT.CV = ZO_SavedVars:NewCharacterIdSettings("IfThisThenThat_Vars", 1, ns, IFTTT.Default)
 end
+
+
 
 
 EM:RegisterForEvent(IFTTT.Name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
