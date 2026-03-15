@@ -21,6 +21,7 @@ outcomes/Collectible.lua
 ## Triggers
 triggers/Triggers.lua
 triggers/Skills.lua
+triggers/TriggerCollectibles.lua
 
 Links.lua
 IfThisThenThat.lua

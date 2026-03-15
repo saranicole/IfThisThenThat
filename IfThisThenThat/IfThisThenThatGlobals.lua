@@ -48,6 +48,10 @@ function IFTTT.DiffTables(old, new, path)
 end
 
 function IFTTT.Split(search, delim)
+  if not search then
+    d("IFTTT: Tried to split nil value")
+    return
+  end
   local parts = {}
   local start = 1
   delim = delim or "-"
@@ -66,7 +70,6 @@ function IFTTT.Split(search, delim)
 end
 
 function IFTTT.toCapitalized(s)
-  s = s:lower()
   return s:sub(1,1):upper() .. s:sub(2)
 end
 

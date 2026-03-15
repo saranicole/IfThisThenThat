@@ -23,7 +23,6 @@ local nonUsableCategories = {
   [6] = true, -- Furnishings
   [7] = true, -- Fragments
   [10] = true, -- Tools
-  [11] = true, -- Mounts
   [13] = true, -- Customized Actions
   [15] = true, -- Armor Styles
   [16] = true, -- Weapon Styles
