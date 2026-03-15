@@ -4,6 +4,7 @@ local Triggers = IFTTT.Triggers or ZO_DeferredInitializingObject:Subclass()
 Triggers.items = {
   Skills = {},
   TriggerCollectibles = {},
+  TriggerMounts = {},
 }
 
 function Triggers:Initialize(parent)

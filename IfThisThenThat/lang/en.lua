@@ -5,6 +5,7 @@ IFTTT.Lang = {
   EFFECT_HEADING  = "Effects",
   COLLECTIBLE_HEADING = "Collectibles",
   TRIGGERCOLLECTIBLE_HEADING = "Trigger Collectibles",
+  MOUNT_HEADING  = "Mounts",
   SKILLS_HEADING = "Skills",
   ADD_LINK       = "Add Link for Character",
   ADD            = "Character Add",
@@ -20,5 +21,6 @@ IFTTT.Lang = {
   ACCOUNT        = "ACCOUNT",
   CHARACTER      = "CHARACTER",
   BACK           = "Collectible - Go Back",
+  BACK_MOUNT     = "Mount - Go Back",
   RESET_TRIGGERS = "Reset triggers",
 }
