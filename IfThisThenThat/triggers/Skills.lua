@@ -97,7 +97,7 @@ function Skills:callbacks(links)
                   pollSkillFinished(slotNum, hotbarCategory, slotKey, k, obj, false, self.categoryLock[outcomeCategory], 300)
               end, self.existingCooldown)
             end
-          end, 500)
+          end, 1500)
         end
       end
     end
