@@ -12,19 +12,20 @@ IFTTT.outcomeSelected = {}
 IFTTT.deleteSelected = {}
 IFTTT.subcategorySettings = {}
 IFTTT.collectibleSettings = {}
+IFTTT.labelSettings = {}
 
 local function warnMessage(commitTrigger, commitEffect)
   local problem = ""
-  if not next(commitTrigger) or not next(commitEffect) then
-    if not next(commitTrigger) then
-      problem = problem..IFTTT.Lang.TRIGGER
+  if commitTrigger and next(commitTrigger) and commitEffect and next(commitEffect) then return problem end
+  problem = "|cff0000"..IFTTT.Name.."|r "..IFTTT.Lang.PLEASE_SELECT.." "
+  if not commitTrigger or (type(commitTrigger) == "table" and not next(commitTrigger)) then
+    problem = problem..IFTTT.Lang.TRIGGER.." "
+  end
+  if not commitEffect or (type(commitEffect) == "table" and not next(commitEffect)) then
+    if not commitTrigger or (type(commitTrigger) == "table" and not next(commitTrigger)) then
+      problem = problem..IFTTT.Lang.AND.." "
     end
-    if not next(commitEffect) then
-      if not next(commitTrigger) then
-        problem = problem..IFTTT.Lang.AND.." "
-      end
-      problem =  IFTTT.Lang.EFFECT
-    end
+    problem =  problem..IFTTT.Lang.EFFECT
   end
   return problem
 end
@@ -90,9 +91,9 @@ function IFTTT:BuildMenu()
         end
       end,
       setFunction = function(var, itemName, itemData)
-        triggerMountItem.selected.name = itemName
-        triggerMountItem.selected.data = itemData.data
-        self.triggerSelected = triggerMountItem.selected
+        local selected = {name=itemName, data=itemData.data}
+        triggerMountItem.selected = selected
+        self.triggerSelected = selected
       end,
     }
   local triggerCollectibleItem = IFTTT.Triggers.items.TriggerCollectibles
@@ -153,8 +154,9 @@ function IFTTT:BuildMenu()
         return  ""
       end,
       setFunction = function(var, itemName, itemData)
-        triggerCollectibleItem.selected = { name = itemName, data = itemData.data }
-        self.triggerSelected = triggerCollectibleItem.selected
+        local selected = {name=itemName, data=itemData.data}
+        triggerCollectibleItem.selected = selected
+        self.triggerSelected = selected
       end,
     }
   for k, triggerItem in pairs(IFTTT.Triggers.items) do
@@ -176,8 +178,9 @@ function IFTTT:BuildMenu()
         return triggerItem.available[1].name or ""
       end,
       setFunction = function(var, itemName, itemData)
-        triggerItem.selected = {name=itemName, data=itemData.data}
-        self.triggerSelected = triggerItem.selected
+        local selected = {name=itemName, data=itemData.data}
+        triggerItem.selected = selected
+        self.triggerSelected = selected
       end,
       default = "",
     }
@@ -189,7 +192,7 @@ function IFTTT:BuildMenu()
       type = LAM.ST_BUTTON,
       label = IFTTT.Lang.SELECT_TRIGGER,
       buttonText = IFTTT.Lang.SELECT_TRIGGER,
-      clickHandler = function()
+      clickHandler = function(control)
         self.commitTrigger = self.triggerSelected
         panel:UpdateControls()
       end
@@ -198,16 +201,16 @@ function IFTTT:BuildMenu()
       type = LAM.ST_BUTTON,
       label = IFTTT.Lang.CLEAR.." "..IFTTT.Lang.TRIGGER,
       buttonText = IFTTT.Lang.CLEAR.." "..IFTTT.Lang.TRIGGER,
-      clickHandler = function()
+      clickHandler = function(control)
         self.commitTrigger = nil
         panel:UpdateControls()
       end
     })
-    panel:AddSetting {
+    IFTTT.labelSettings["selected"] = panel:AddSetting {
       type = LAM.ST_SECTION,
       label = IFTTT.Lang.SELECTED_TRIGGER
     }
-    panel:AddSetting {
+    IFTTT.labelSettings["trigger"] = panel:AddSetting {
       type = LAM.ST_LABEL,
       label = function()
         if self.commitTrigger and next(self.commitTrigger) then
@@ -274,9 +277,9 @@ function IFTTT:BuildMenu()
         return  ""
       end,
       setFunction = function(var, itemName, itemData)
-        collectibleItem.selected.name = itemName
-        collectibleItem.selected.data = itemData.data
-        self.outcomeSelected = collectibleItem.selected
+        local selected = {name=itemName, data=itemData.data}
+        collectibleItem.selected = selected
+        self.outcomeSelected = selected
       end,
     }
     panel:AddSetting {
@@ -301,11 +304,11 @@ function IFTTT:BuildMenu()
         panel:UpdateControls()
       end
     })
-    panel:AddSetting {
+    self.labelSettings["selectedEffectHeader"] = panel:AddSetting {
       type = LAM.ST_SECTION,
       label = IFTTT.Lang.SELECTED_EFFECT
     }
-    panel:AddSetting {
+    self.labelSettings["effect"] = panel:AddSetting {
       type = LAM.ST_LABEL,
       label = function()
         if self.commitEffect and next(self.commitEffect) then
@@ -326,11 +329,15 @@ function IFTTT:BuildMenu()
       clickHandler = function()
         local warn = warnMessage(self.commitTrigger, self.commitEffect)
         if warn ~= "" then
-          d(warn)
+          ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.NONE, warn)
           return
         end
         local linkTrigger = { trigger = self.commitTrigger, outcome = self.commitEffect }
         table.insert(self.Links.savedVarsChar.links, linkTrigger)
+        self.commitTrigger = nil
+        self.commitEffect = nil
+        self.triggerSelected = nil
+        self.outcomeSelected = nil
         self:AddCallbacks()
         panel:UpdateControls()
       end
@@ -343,11 +350,15 @@ function IFTTT:BuildMenu()
       clickHandler = function()
         local warn = warnMessage(self.commitTrigger, self.commitEffect)
         if warn ~= "" then
-          d(warn)
+          ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.NONE, warn)
           return
         end
         local linkTrigger = { trigger = self.commitTrigger, outcome = self.commitEffect }
         table.insert(self.Links.savedVarsAcc.links, linkTrigger)
+        self.commitTrigger = nil
+        self.commitEffect = nil
+        self.triggerSelected = nil
+        self.outcomeSelected = nil
         self:AddCallbacks()
         panel:UpdateControls()
       end
