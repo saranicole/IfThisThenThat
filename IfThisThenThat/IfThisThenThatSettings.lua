@@ -350,7 +350,7 @@ function IFTTT:BuildMenu()
       clickHandler = function()
         local warn = warnMessage(self.commitTrigger, self.commitEffect)
         if warn ~= "" then
-          d(warn)
+          ZO_Alert(UI_ALERT_CATEGORY_ALERT, SOUNDS.NONE, warn)
           return
         end
         local linkTrigger = { trigger = self.commitTrigger, outcome = self.commitEffect }
