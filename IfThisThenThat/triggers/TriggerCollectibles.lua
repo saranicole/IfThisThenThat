@@ -81,8 +81,8 @@ function TriggerCollectibles:GetCollectibles()
   end
   for collectibleIndex = 1, numCollectibles do
     local id = GetCollectibleId(tonumber(parts[1]), subcategoryIndex, collectibleIndex)
-
-    local name, description, iconFile, _, unlocked, _, purchasable, active, category = GetCollectibleInfo(id)
+    local category = GetCategoryInfoFromCollectibleId(id)
+    local name, description, iconFile, _, unlocked, _, purchasable, active = GetCollectibleInfo(id)
 
     if unlocked then
       table.insert(self.collectibles, {
