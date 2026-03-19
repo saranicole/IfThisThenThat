@@ -17,7 +17,7 @@ IFTTT.fastTravelModified = false
 IFTTT.deleteFunc = function() 
   local deleteItems = {}
   for key, linkItem in pairs(IFTTT.Links.savedVarsAcc.links) do
-    table.insert(deleteItems, { name = IFTTT.Lang.ACCOUNT.."   "..key.."   "..linkItem.trigger.name.." → "..linkItem.outcome.name, data = IFTTT.Lang.ACCOUNT.."-"..key"-"..linkItem.trigger.data })
+    table.insert(deleteItems, { name = IFTTT.Lang.ACCOUNT.."   "..key.."   "..linkItem.trigger.name.." → "..linkItem.outcome.name, data = IFTTT.Lang.ACCOUNT.."-"..key.."-"..linkItem.trigger.data })
   end
   for key, linkItem in pairs(IFTTT.Links.savedVarsChar.links) do
     table.insert(deleteItems, { name = IFTTT.Lang.CHARACTER.."   "..key.."   "..linkItem.trigger.name.." → "..linkItem.outcome.name, data = IFTTT.Lang.CHARACTER.."-"..key.."-"..linkItem.trigger.data })
