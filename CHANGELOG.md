@@ -1,6 +1,7 @@
 ## 2026.03.20
 - Add deliberate exclusion of Fishing
 - Add Companion Collectible as outcome
+- And remove companion collectible as not allowed
 
 ## 2026.03.19
 - Add trigger Swimming
