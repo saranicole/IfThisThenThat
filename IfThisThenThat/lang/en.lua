@@ -4,7 +4,6 @@ IFTTT.Lang = {
   TRIGGER_HEADING = "Triggers",
   EFFECT_HEADING  = "Effects",
   COLLECTIBLE_HEADING = "Collectibles",
-  COMPANIONCOLLECTIBLE_HEADING = "Companion Collectibles",
   CATEGORY    = "Category",
   SUBCATEGORY    = "Subcategory",
   TRIGGERCOLLECTIBLE_HEADING = "Trigger Collectibles",

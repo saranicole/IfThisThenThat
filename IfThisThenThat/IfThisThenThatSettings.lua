@@ -247,7 +247,6 @@ function IFTTT:BuildMenu()
       label = ""
     }
     for k, collectibleItem in pairs(IFTTT.Outcomes.items) do
-    if k ~= "CompanionCollectible" or (k == "CompanionCollectible" and IFTTT.Outcomes.items.CompanionCollectible.companionsUnlocked) then
     panel:AddSetting {
       type = LAM.ST_SECTION,
       label = IFTTT.Lang[string.upper(k).."_HEADING"]
@@ -309,7 +308,6 @@ function IFTTT:BuildMenu()
         self.outcomeSelected = selected
       end,
     }
-    end
   end
     panel:AddSetting {
       type = LAM.ST_SECTION,

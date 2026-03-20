@@ -3,7 +3,6 @@ local IFTTT = IFTTT
 local Outcomes = IFTTT.Outcomes or ZO_DeferredInitializingObject:Subclass()
 Outcomes.items = {
   Collectible = {},
-  CompanionCollectible = {},
 }
 
 function Outcomes:Initialize(parent)
