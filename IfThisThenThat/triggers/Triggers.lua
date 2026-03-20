@@ -5,7 +5,6 @@ Triggers.items = {
   Skills = {},
   TriggerCollectibles = {},
   TriggerMounts = {},
-  FastTravel = {},
   Swimming = {},
   Combat = {},
 }

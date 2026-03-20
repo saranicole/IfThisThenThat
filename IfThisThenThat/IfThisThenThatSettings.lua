@@ -13,7 +13,7 @@ IFTTT.deleteSelected = {}
 IFTTT.subcategorySettings = {}
 IFTTT.collectibleSettings = {}
 IFTTT.labelSettings = {}
-IFTTT.fastTravelModified = false
+
 IFTTT.deleteFunc = function() 
   local deleteItems = {}
   for key, linkItem in pairs(IFTTT.Links.savedVarsAcc.links) do
@@ -25,43 +25,6 @@ IFTTT.deleteFunc = function()
   return deleteItems
 end
 
-ZO_Dialogs_RegisterCustomDialog(
-        "RELOAD_UI_DIALOG",
-        {
-            gamepadInfo =
-            {
-                dialogType = GAMEPAD_DIALOGS.BASIC,
-            },
-            title =
-            {
-                text = IFTTT.Lang.FAST_TRAVEL_RELOAD,
-            },
-            mainText = {align=TEXT_ALIGN_LEFT, IFTTT.Lang.FAST_TRAVEL_BODY},
-            buttons = {
-              {
-                keybind = "DIALOG_PRIMARY",
-                text = SI_DIALOG_CONFIRM,
-                callback = function()
-                  ReloadUI()
-                end,
-              },
-              {
-                keybind = "DIALOG_NEGATIVE",
-                text = SI_DIALOG_CLOSE,
-                callback = function()
-                  ZO_Dialogs_ReleaseDialog("RELOAD_UI_DIALOG")
-                end,
-              }
-            }
-        })
-        
-local function ShowDialog()
-  if IsInGamepadPreferredMode() or IsConsoleUI() then
-    ZO_Dialogs_ShowGamepadDialog("RELOAD_UI_DIALOG")
-  else
-    ZO_Dialogs_ShowDialog("RELOAD_UI_DIALOG")
-  end
-end
 
 local function warnMessage(commitTrigger, commitEffect)
   local problem = ""
@@ -250,9 +213,6 @@ function IFTTT:BuildMenu()
       clickHandler = function(control)
         self.commitTrigger = self.triggerSelected
         local dataParts = self.Split(self.triggerSelected.data)
-        if dataParts and dataParts[#dataParts] == "fastTravel" then
-          self.fastTravelModified = true
-        end
         panel:UpdateControls()
       end
     })
@@ -262,7 +222,6 @@ function IFTTT:BuildMenu()
       buttonText = IFTTT.Lang.CLEAR.." "..IFTTT.Lang.TRIGGER,
       clickHandler = function(control)
         self.commitTrigger = nil
-        IFTTT.fastTravelModified = false
         panel:UpdateControls()
       end
     })
@@ -404,10 +363,6 @@ function IFTTT:BuildMenu()
         self.outcomeSelected = nil
         self:AddCallbacks()
         panel:UpdateControls()
-        if self.fastTravelModified then
-          ShowDialog("RELOAD_UI_DIALOG")
-        end
-        self.fastTravelModified = false
       end
     })
     panel:AddSetting({
@@ -429,10 +384,7 @@ function IFTTT:BuildMenu()
         self.outcomeSelected = nil
         self:AddCallbacks()
         panel:UpdateControls()
-        if self.fastTravelModified then
-          ShowDialog("RELOAD_UI_DIALOG")
-        end
-        self.fastTravelModified = false
+
       end
     })
   panel:AddSetting({
@@ -499,9 +451,6 @@ function IFTTT:BuildMenu()
       end
       self.deleteSelected = {}
       panel:UpdateControls()
-      if deleteParts and deleteParts[#deleteParts] == "fastTravel" then
-        ShowDialog("RELOAD_UI_DIALOG")
-      end
     end
   })
   panel:AddSetting({

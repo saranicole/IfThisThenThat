@@ -8,7 +8,6 @@ IFTTT.Lang = {
   TRIGGERCOLLECTIBLE_HEADING = "Trigger Collectibles",
   MOUNT_HEADING  = "Mounts",
   SKILLS_HEADING = "Skills",
-  FASTTRAVEL_HEADING = "Fast Travel",
   SWIMMING_HEADING = "Swimming",
   COMBAT_HEADING = "Combat",
   ADD_LINK       = "Add Link for Character",
