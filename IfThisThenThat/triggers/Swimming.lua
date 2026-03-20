@@ -48,10 +48,11 @@ function Swimming:HookSwim(links)
     callbackTable = {}
     local triggerparts = IFTTT.Split(link.trigger.data)
     local outcomeparts = IFTTT.Split(link.outcome.data)
-    local desiredCollectibleId = tonumber(triggerparts[1])
+    local activeCollectibleId = tonumber(triggerparts[1])
+    local desiredCollectibleId = tonumber(outcomeparts[1])
     local type = IFTTT.toCapitalized(outcomeparts[3])
     link.trigger.active = link.trigger.active or {}
-    if desiredCollectibleId == 0 or IsCollectibleActive(desiredCollectibleId) then
+    if activeCollectibleId == 0 or not IsCollectibleActive(desiredCollectibleId) then
       local slotKey = triggerparts[1].."-"..triggerparts[2].."-"..outcomeparts[1]
       self.snapshot = desiredCollectibleId
       callbackTable[type] = callbackTable[type] or {}
