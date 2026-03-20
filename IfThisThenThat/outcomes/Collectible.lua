@@ -102,8 +102,10 @@ function Collectible:RefreshCategories()
 end
 
 function Collectible:PollUsable(activeCollectible, desiredCollectibleId, toggleOn)
+  local category, subcategory =  GetCategoryInfoFromCollectibleId(desiredCollectibleId)
+  local isPolymorph = (category == 4 and subcategory == 11)
   -- Switch on or off desired
-  if (toggleOn or activeCollectible == 0) and IsCollectibleUsable(desiredCollectibleId) and IsCollectibleValidForPlayer(desiredCollectibleId) then
+  if (toggleOn or activeCollectible == 0 or isPolymorph) and IsCollectibleUsable(desiredCollectibleId) and IsCollectibleValidForPlayer(desiredCollectibleId) then
     UseCollectible(desiredCollectibleId)
     -- Switch on case but did not succeed
     zo_callLater(function()
@@ -112,7 +114,7 @@ function Collectible:PollUsable(activeCollectible, desiredCollectibleId, toggleO
           self:PollUsable(activeCollectible, desiredCollectibleId, toggleOn)
         end, 1000)
       -- Trying to toggle off desired collectible
-      elseif not toggleOn and activeCollectible == 0 and IsCollectibleActive(desiredCollectibleId) then
+      elseif not toggleOn and (activeCollectible == 0 or isPolymorph) and IsCollectibleActive(desiredCollectibleId) then
         zo_callLater(function()
           self:PollUsable(activeCollectible, desiredCollectibleId, toggleOn)
         end, 1000)
