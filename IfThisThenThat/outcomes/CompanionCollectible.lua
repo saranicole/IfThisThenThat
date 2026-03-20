@@ -117,7 +117,7 @@ function CompanionCollectible:PollUsable(activeCompanionCollectible, desiredComp
     UseCollectible(desiredCompanionCollectibleId, GAMEPLAY_ACTOR_CATEGORY_COMPANION)
     -- Switch on case but did not succeed
     zo_callLater(function()
-      if toggleOn and activeCompanionCollectible ~= 0 and not IsCollectibleActive(desiredCompanionCollectibleId) then
+      if toggleOn and activeCompanionCollectible ~= 0 and not IsCollectibleActive(desiredCompanionCollectibleId, GAMEPLAY_ACTOR_CATEGORY_COMPANION) then
         zo_callLater(function()
           self:PollUsable(activeCompanionCollectible, desiredCompanionCollectibleId, toggleOn)
         end, 1000)
@@ -130,7 +130,7 @@ function CompanionCollectible:PollUsable(activeCompanionCollectible, desiredComp
     end, 1000)
   end
   -- Switch back to previous CompanionCollectible
-  if not toggleOn and activeCompanionCollectible ~= 0 and not IsCollectibleActive(activeCompanionCollectible, GAMEPLAY_ACTOR_CATEGORY_COMPANION) and IsCollectibleUsable(activeCompanionCollectible) and IsCollectibleValidForPlayer(activeCompanionCollectible) then
+  if not toggleOn and activeCompanionCollectible ~= 0 and not IsCollectibleActive(activeCompanionCollectible, GAMEPLAY_ACTOR_CATEGORY_COMPANION) and IsCollectibleUsable(activeCompanionCollectible) and IsCollectibleAvailableToActorCategory(desiredCompanionCollectibleId, GAMEPLAY_ACTOR_CATEGORY_COMPANION) then
     UseCollectible(activeCompanionCollectible, GAMEPLAY_ACTOR_CATEGORY_COMPANION)
     zo_callLater(function()
       if not IsCollectibleActive(activeCompanionCollectible, GAMEPLAY_ACTOR_CATEGORY_COMPANION) then
