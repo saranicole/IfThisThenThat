@@ -95,11 +95,11 @@ function Pvp:callbacks(links)
       local triggerparts = IFTTT.Split(link.trigger.data)
       local desiredPvpLevel = tonumber(IFTTT.Split(triggerparts[2], "_")[1])
       if desiredPvpLevel == 0 then
-        if (IsInCampaign() or IsActiveWorldBattleground()) and not origSelf.leavingPvpZone then
+        if (IsPlayerInAvAWorld() or IsActiveWorldBattleground()) and not origSelf.leavingPvpZone then
           origSelf.leavingPvpZone = true
           origSelf:Hook(link, true)
         end
-        if origSelf.leavingPvpZone and not (IsInCampaign() or IsActiveWorldBattleground()) then
+        if origSelf.leavingPvpZone and not (IsPlayerInAvAWorld() or IsActiveWorldBattleground()) then
           origSelf.leavingPvpZone = false
           origSelf:Hook(link, false)
         end
